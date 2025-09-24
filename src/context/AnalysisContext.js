@@ -14,58 +14,89 @@ const initialState = {
   datiInput: {
     sp: {
       attivo: {
-        creditiVersoSoci: '', immobilizzazioni: { immateriali: { costiImpiantoEAmpliamento: '', costiRicercaESviluppo: '', dirittiBrevetti: '', concessioniLicenzeMarchi: '', avviamento: '', immobilizzazioniInCorso: '', altri: '' }, materiali: { terreniEFabbricati: '', impiantiEMacchinari: '', attrezzature: '', altriBeni: '', immobilizzazioniInCorsoEAcconti: '' }, finanziarie: { partecipazioniInControllate: '', partecipazioniInCollegate: '', partecipazioniInControllanti: '', altrePartecipazioni: '', creditiVersoControllate: '', creditiVersoCollegate: '', creditiVersoControllanti: '', altriCreditiFinanziari: '', altriTitoli: '', azioniProprie: '' } },
-        attivoCircolante: { rimanenze: { materiePrimeSussidiarieConsumo: '', prodottiInCorsoESemilavorati: '', lavoriInCorsoSuOrdinazione: '', prodottiFinitiEMerci: '', accontiARimanenze: '' }, crediti: { versoClienti: '', versoControllate: '', versoCollegate: '', versoControllanti: '', tributari: '', perImposteAnticipate: '', versoAltri: '' }, attivitaFinanziarieNonImmobilizzate: '', disponibilitaLiquide: { depositiBancariEPostali: '', assegni: '', denaroEValoriInCassa: '' } },
+        creditiVersoSoci: { entro12Mesi: '', oltre12Mesi: '' },
+        immobilizzazioni: {
+          immateriali: { costiImpiantoEAmpliamento: '', costiRicercaESviluppo: '', dirittiBrevetti: '', concessioniLicenzeMarchi: '', avviamento: '', immobilizzazioniInCorso: '', altri: '' },
+          materiali: { terreniEFabbricati: '', impiantiEMacchinari: '', attrezzature: '', altriBeni: '', immobilizzazioniInCorsoEAcconti: '' },
+          finanziarie: { partecipazioniInControllate: '', partecipazioniInCollegate: '', partecipazioniInControllanti: '', altrePartecipazioni: '', creditiVersoControllate: '', creditiVersoCollegate: '', creditiVersoControllanti: '', altriCreditiFinanziari: '', altriTitoli: '', azioniProprie: '' }
+        },
+        attivoCircolante: {
+          rimanenze: { materiePrimeSussidiarieConsumo: '', prodottiInCorsoESemilavorati: '', lavoriInCorsoSuOrdinazione: '', prodottiFinitiEMerci: '', accontiARimanenze: '' },
+          crediti: {
+            versoClienti: { entro12Mesi: '', oltre12Mesi: '' },
+            versoControllate: { entro12Mesi: '', oltre12Mesi: '' },
+            versoCollegate: { entro12Mesi: '', oltre12Mesi: '' },
+            versoControllanti: { entro12Mesi: '', oltre12Mesi: '' },
+            tributari: '', perImposteAnticipate: '', versoAltri: ''
+          },
+          attivitaFinanziarieNonImmobilizzate: '',
+          disponibilitaLiquide: { depositiBancariEPostali: '', assegni: '', denaroEValoriInCassa: '' }
+        },
         rateiERiscontiAttivi: ''
       },
       passivo: {
         patrimonioNetto: {
           capitale: '', riservaSovrapprezzoAzioni: '', riservaDaRivalutazione: '', riservaLegale: '',
           riserveStatutarie: '', altreRiserve: '', riservaPerOperazioniCoperturaFlussiFinanziariAttesi: '',
-          utilePerditaPortataANuovo: '', utilePerditaEsercizio: '', riservaNegativaAzioniProprie: '' // <-- CAMPO AGGIUNTO
+          utilePerditaPortataANuovo: '', utilePerditaEsercizio: '', riservaNegativaAzioniProprie: ''
         },
         fondiPerRischiEOneri: '',
         TFR: '',
         debiti: {
-          obbligazioni: '', obbligazioniConvertibili: '', debitiVersoSociPerFinanziamenti: '',
-          debitiVersoBanche: '', debitiVersoAltriFinanziatori: '', accontiDaClienti: '',
-          debitiVersoFornitori: '', debitiRappresentatiDaTitoliDiCredito: '', debitiVersoImpreseControllate: '',
-          debitiVersoImpreseCollegate: '', debitiVersoImpreseControllanti: '', debitiTributari: '',
-          debitiVersoIstitutiPrevidenza: '', altriDebiti: ''
+          obbligazioni: { entro12Mesi: '', oltre12Mesi: '' },
+          obbligazioniConvertibili: { entro12Mesi: '', oltre12Mesi: '' },
+          debitiVersoSociPerFinanziamenti: { entro12Mesi: '', oltre12Mesi: '' },
+          debitiVersoBanche: { entro12Mesi: '', oltre12Mesi: '' },
+          debitiVersoAltriFinanziatori: { entro12Mesi: '', oltre12Mesi: '' },
+          accontiDaClienti: '',
+          debitiVersoFornitori: { entro12Mesi: '', oltre12Mesi: '' },
+          debitiRappresentatiDaTitoliDiCredito: { entro12Mesi: '', oltre12Mesi: '' },
+          debitiVersoImpreseControllate: { entro12Mesi: '', oltre12Mesi: '' },
+          debitiVersoImpreseCollegate: { entro12Mesi: '', oltre12Mesi: '' },
+          debitiVersoImpreseControllanti: { entro12Mesi: '', oltre12Mesi: '' },
+          debitiTributari: '',
+          debitiVersoIstitutiPrevidenza: '',
+          altriDebiti: ''
         },
         rateiERiscontiPassivi: ''
       }
     },
     ce: {
       valoreProduzione: { ricaviVendite: '', variazioniRimanenzeProdotti: '', variazioniLavoriInCorso: '', incrementiImmobilizzazioniPerLavoriInterni: '', altriRicaviEProventi: '' },
-      costiProduzione: { perMateriePrime: { valore: '', pVar: '100' }, perServizi: { valore: '', pVar: '50' }, perGodimentoBeniTerzi: { valore: '', pVar: '10' }, perPersonale: { valore: '', pVar: '20' }, ammortamentiESvalutazioni: { valore: '', pVar: '0' }, variazioniRimanenzeMaterie: '', accantonamentiPerRischi: '', altriAccantonamenti: '', oneriDiversiGestione: '' },
+      costiProduzione: {
+        perMateriePrime: '', perServizi: '',
+        perGodimentoBeniTerzi: '', perPersonale: '',
+        ammortamentiESvalutazioni: '', variazioniRimanenzeMaterie: '',
+        accantonamentiPerRischi: '', altriAccantonamenti: '',
+        oneriDiversiGestione: ''
+      },
       proventiEOneriFinanziari: { proventiDaPartecipazioni: '', altriProventiFinanziari: '', interessiEAltriOneri: '', utilePerditeSuCambi: '' },
-      rettificheValoreAttivitaPassivitaFinanziarie: '', imposteSulReddito: '',
+      rettificheValoreAttivitaPassivitaFinanziarie: '',
+      imposteSulReddito: '',
     }
   },
   risultati: null,
-  vistaAttiva: { sp: 'misto', ce: 'valoreAggiunto' },
+  vistaAttiva: { sp: 'finanziario', ce: 'valoreAggiunto' },
 };
 
 function analysisReducer(state, action) {
   switch (action.type) {
     case 'UPDATE_INPUT_VALUE':
-      const { path, value, isCost } = action.payload;
+      const { path, value, subField } = action.payload;
       const newState = JSON.parse(JSON.stringify(state));
       let current = newState.datiInput;
       for (let i = 0; i < path.length - 1; i++) {
         current = current[path[i]];
       }
-      if (isCost) {
-        const { subField } = action.payload;
-        current[path[path.length - 1]][subField] = value;
+      const finalKey = path[path.length - 1];
+      if (subField) {
+        current[finalKey][subField] = value;
       } else {
-        current[path[path.length - 1]] = value;
+        current[finalKey] = value;
       }
       return newState;
 
     case 'CALCULATE_RESULTS':
-      // Il reducer orchestra le chiamate al motore di calcolo
       const datiInput = state.datiInput;
       const risultatiSPFinanziario = riclassificaSPFinanziario(datiInput);
       const risultatiSPFunzionale = riclassificaSPFunzionale(datiInput);

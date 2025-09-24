@@ -4,36 +4,44 @@ import { AnalysisContext } from '../context/AnalysisContext';
 import { TextField, Button, Box, Typography, Paper, Grid, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-// Componente helper (invariato)
-const InputField = ({ path, label, isCost = false }) => {
+// --- COMPONENTI HELPER PER IL NUOVO FORM ---
+
+const InputField = ({ path, label }) => {
     const { state, dispatch } = useContext(AnalysisContext);
-    let fieldState = state.datiInput;
-    try { path.forEach(p => { fieldState = fieldState[p]; }); } catch (e) { console.error("Error accessing path:", path); return null; }
+    let value = state.datiInput;
+    try { path.forEach(p => { value = value[p]; }); } catch (e) { console.error("Error accessing path:", path); return null; }
     
-    const handleInputChange = (e, subField = null) => {
-        dispatch({
-            type: 'UPDATE_INPUT_VALUE',
-            payload: { path, value: e.target.value, isCost, subField },
-        });
+    const handleChange = (e) => {
+        dispatch({ type: 'UPDATE_INPUT_VALUE', payload: { path, value: e.target.value } });
     };
-    
-    if (isCost) {
-        return (
-            <Grid item xs={12} sm={6} md={4}>
-                <Box display="flex" gap={1}>
-                    <TextField fullWidth size="small" type="number" label={label} value={fieldState.valore} onChange={(e) => handleInputChange(e, 'valore')} />
-                    <TextField type="number" label="% Var." sx={{ width: '120px' }} size="small" value={fieldState.pVar} onChange={(e) => handleInputChange(e, 'pVar')} inputProps={{ min: 0, max: 100 }} />
-                </Box>
-            </Grid>
-        );
-    }
     return (
         <Grid item xs={12} sm={6} md={4}>
-            <TextField fullWidth size="small" type="number" label={label} value={fieldState} onChange={handleInputChange} />
+            <Typography variant="caption" display="block" sx={{ mb: 0.5, height: '2.5em' }}>{label}</Typography>
+            <TextField fullWidth size="small" type="number" value={value} onChange={handleChange} variant="outlined" />
         </Grid>
     );
 };
 
+const SplitField = ({ path, label }) => {
+    const { state, dispatch } = useContext(AnalysisContext);
+    let value = state.datiInput;
+    try { path.forEach(p => { value = value[p]; }); } catch (e) { console.error("Error accessing path:", path); return null; }
+
+    const handleChange = (e, subField) => {
+        dispatch({ type: 'UPDATE_INPUT_VALUE', payload: { path, value: e.target.value, subField } });
+    };
+    return (
+        <Grid item xs={12} sm={6} md={4}>
+             <Typography variant="caption" display="block" sx={{ mb: 0.5, height: '2.5em' }}>{label}</Typography>
+             <Box display="flex" gap={1}>
+                <TextField fullWidth size="small" type="number" label="Entro 12 mesi" value={value.entro12Mesi} onChange={(e) => handleChange(e, 'entro12Mesi')} variant="outlined" />
+                <TextField fullWidth size="small" type="number" label="Oltre 12 mesi" value={value.oltre12Mesi} onChange={(e) => handleChange(e, 'oltre12Mesi')} variant="outlined" />
+             </Box>
+        </Grid>
+    );
+};
+
+// --- COMPONENTE PRINCIPALE ---
 function BilancioForm() {
   const { dispatch } = useContext(AnalysisContext);
   const handleCalculate = () => dispatch({ type: 'CALCULATE_RESULTS' });
@@ -52,7 +60,7 @@ function BilancioForm() {
         <AccordionDetails>
             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography variant="subtitle1">ATTIVO</Typography></AccordionSummary>
                 <AccordionDetails>
-                    <Grid container spacing={2} sx={{ mb: 2 }}><InputField path={['sp', 'attivo', 'creditiVersoSoci']} label="A) Crediti v/ soci per versamenti" /></Grid>
+                    <Grid container spacing={2} sx={{ mb: 2 }}><SplitField path={['sp', 'attivo', 'creditiVersoSoci']} label="A) Crediti v/ soci per versamenti" /></Grid>
                     <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>B) Immobilizzazioni</Typography></AccordionSummary>
                         <AccordionDetails>
                             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>B.I) Immobilizzazioni immateriali</Typography></AccordionSummary>
@@ -104,10 +112,10 @@ function BilancioForm() {
                             </Accordion>
                             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>C.II) Crediti</Typography></AccordionSummary>
                                 <AccordionDetails><Grid container spacing={2}>
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoClienti']} label="1) Verso Clienti" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoControllate']} label="2) Verso imprese controllate" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoCollegate']} label="3) Verso imprese collegate" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoControllanti']} label="4) Verso imprese controllanti" />
+                                    <SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoClienti']} label="1) Verso Clienti" />
+                                    <SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoControllate']} label="2) Verso imprese controllate" />
+                                    <SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoCollegate']} label="3) Verso imprese collegate" />
+                                    <SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoControllanti']} label="4) Verso imprese controllanti" />
                                     <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'tributari']} label="4-bis) Crediti tributari" />
                                     <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'perImposteAnticipate']} label="4-ter) Imposte anticipate" />
                                     <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoAltri']} label="4-quater) Verso altri" />
@@ -148,17 +156,17 @@ function BilancioForm() {
                     </Grid>
                     <Accordion sx={{mt: 2}}><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>D) Debiti</Typography></AccordionSummary>
                         <AccordionDetails><Grid container spacing={2}>
-                            <InputField path={['sp', 'passivo', 'debiti', 'obbligazioni']} label="D.1) Obbligazioni" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'obbligazioniConvertibili']} label="D.2) Obbligazioni convertibili" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiVersoSociPerFinanziamenti']} label="D.3) Debiti verso soci per finanziamenti" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiVersoBanche']} label="D.4) Debiti verso banche" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiVersoAltriFinanziatori']} label="D.5) Debiti verso altri finanziatori" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'obbligazioni']} label="D.1) Obbligazioni" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'obbligazioniConvertibili']} label="D.2) Obbligazioni convertibili" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoSociPerFinanziamenti']} label="D.3) Debiti verso soci per finanziamenti" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoBanche']} label="D.4) Debiti verso banche" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoAltriFinanziatori']} label="D.5) Debiti verso altri finanziatori" />
                             <InputField path={['sp', 'passivo', 'debiti', 'accontiDaClienti']} label="D.6) Acconti" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiVersoFornitori']} label="D.7) Debiti verso fornitori" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiRappresentatiDaTitoliDiCredito']} label="D.8) Debiti rappresentati da titoli di credito" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseControllate']} label="D.9) Debiti verso imprese controllate" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseCollegate']} label="D.10) Debiti verso imprese collegate" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseControllanti']} label="D.11) Debiti verso imprese controllanti" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoFornitori']} label="D.7) Debiti verso fornitori" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiRappresentatiDaTitoliDiCredito']} label="D.8) Debiti rappresentati da titoli di credito" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseControllate']} label="D.9) Debiti verso imprese controllate" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseCollegate']} label="D.10) Debiti verso imprese collegate" />
+                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseControllanti']} label="D.11) Debiti verso imprese controllanti" />
                             <InputField path={['sp', 'passivo', 'debiti', 'debitiTributari']} label="D.12) Debiti tributari" />
                             <InputField path={['sp', 'passivo', 'debiti', 'debitiVersoIstitutiPrevidenza']} label="D.13) Debiti v/ istituti di previdenza" />
                             <InputField path={['sp', 'passivo', 'debiti', 'altriDebiti']} label="D.14) Altri debiti" />
@@ -170,7 +178,6 @@ function BilancioForm() {
         </AccordionDetails>
       </Accordion>
 
-      {/* --- CONTO ECONOMICO --- */}
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ backgroundColor: '#f0f0f0' }}>
           <Typography variant="h6">Conto Economico (Art. 2425 C.C.)</Typography>
@@ -187,11 +194,11 @@ function BilancioForm() {
             </Accordion>
              <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>B) Costi della Produzione</Typography></AccordionSummary>
                 <AccordionDetails><Grid container spacing={2}>
-                    <InputField path={['ce', 'costiProduzione', 'perMateriePrime']} label="B.6) Per materie prime, suss., di consumo" isCost />
-                    <InputField path={['ce', 'costiProduzione', 'perServizi']} label="B.7) Per servizi" isCost />
-                    <InputField path={['ce', 'costiProduzione', 'perGodimentoBeniTerzi']} label="B.8) Per godimento beni di terzi" isCost />
-                    <InputField path={['ce', 'costiProduzione', 'perPersonale']} label="B.9) Per il personale" isCost />
-                    <InputField path={['ce', 'costiProduzione', 'ammortamentiESvalutazioni']} label="B.10) Ammortamenti e svalutazioni" isCost />
+                    <InputField path={['ce', 'costiProduzione', 'perMateriePrime']} label="B.6) Per materie prime, suss., di consumo" />
+                    <InputField path={['ce', 'costiProduzione', 'perServizi']} label="B.7) Per servizi" />
+                    <InputField path={['ce', 'costiProduzione', 'perGodimentoBeniTerzi']} label="B.8) Per godimento beni di terzi" />
+                    <InputField path={['ce', 'costiProduzione', 'perPersonale']} label="B.9) Per il personale" />
+                    <InputField path={['ce', 'costiProduzione', 'ammortamentiESvalutazioni']} label="B.10) Ammortamenti e svalutazioni" />
                     <InputField path={['ce', 'costiProduzione', 'variazioniRimanenzeMaterie']} label="B.11) Var. rimanenze di materie prime" />
                     <InputField path={['ce', 'costiProduzione', 'accantonamentiPerRischi']} label="B.12) Accantonamenti per rischi" />
                     <InputField path={['ce', 'costiProduzione', 'altriAccantonamenti']} label="B.13) Altri accantonamenti" />
