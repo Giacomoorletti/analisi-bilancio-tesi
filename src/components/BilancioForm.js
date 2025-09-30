@@ -5,7 +5,6 @@ import { TextField, Button, Box, Typography, Paper, Grid, Accordion, AccordionSu
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 // --- COMPONENTI HELPER PER IL NUOVO FORM ---
-
 const InputField = ({ path, label }) => {
     const { state, dispatch } = useContext(AnalysisContext);
     let value = state.datiInput;
@@ -43,9 +42,14 @@ const SplitField = ({ path, label }) => {
 
 // --- COMPONENTE PRINCIPALE ---
 function BilancioForm() {
-  const { dispatch } = useContext(AnalysisContext);
+  const { state, dispatch } = useContext(AnalysisContext);
   const handleCalculate = () => dispatch({ type: 'CALCULATE_RESULTS' });
   const handleReset = () => dispatch({ type: 'RESET_ANALYSIS' });
+
+  const utileEsercizio = parseFloat(state.datiInput.sp.passivo.patrimonioNetto.utilePerditaEsercizio) || 0;
+  const destinazioneUtile = state.datiInput.destinazioneUtile;
+  const totaleDestinato = (parseFloat(destinazioneUtile.aRiservaLegale) || 0) + (parseFloat(destinazioneUtile.aRiservaStatutaria) || 0) + (parseFloat(destinazioneUtile.aDividendi) || 0) + (parseFloat(destinazioneUtile.portatoANuovo) || 0);
+  const quadraturaUtile = Math.abs(utileEsercizio - totaleDestinato) < 0.01;
 
   return (
     <Paper elevation={3} sx={{ padding: { xs: 1, sm: 3 }, borderRadius: 2, mb: 4 }}>
@@ -63,116 +67,54 @@ function BilancioForm() {
                     <Grid container spacing={2} sx={{ mb: 2 }}><SplitField path={['sp', 'attivo', 'creditiVersoSoci']} label="A) Crediti v/ soci per versamenti" /></Grid>
                     <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>B) Immobilizzazioni</Typography></AccordionSummary>
                         <AccordionDetails>
-                            <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>B.I) Immobilizzazioni immateriali</Typography></AccordionSummary>
-                                <AccordionDetails><Grid container spacing={2}>
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'costiImpiantoEAmpliamento']} label="1) Costi di impianto e ampliamento" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'costiRicercaESviluppo']} label="2) Costi di ricerca e sviluppo" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'dirittiBrevetti']} label="3) Diritti di brevetto e opere ingegno" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'concessioniLicenzeMarchi']} label="4) Concessioni, licenze, marchi" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'avviamento']} label="5) Avviamento" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'immobilizzazioniInCorso']} label="6) Immobilizzazioni in corso e acconti" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'altri']} label="7) Altre" />
-                                </Grid></AccordionDetails>
+                             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>B.I) Immobilizzazioni immateriali</Typography></AccordionSummary>
+                                <AccordionDetails><Grid container spacing={2}><InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'costiImpiantoEAmpliamento']} label="1) Costi di impianto e ampliamento" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'costiRicercaESviluppo']} label="2) Costi di ricerca e sviluppo" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'dirittiBrevetti']} label="3) Diritti di brevetto e opere ingegno" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'concessioniLicenzeMarchi']} label="4) Concessioni, licenze, marchi" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'avviamento']} label="5) Avviamento" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'immobilizzazioniInCorso']} label="6) Immobilizzazioni in corso e acconti" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'immateriali', 'altri']} label="7) Altre" /></Grid></AccordionDetails>
                             </Accordion>
                             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>B.II) Immobilizzazioni materiali</Typography></AccordionSummary>
-                                <AccordionDetails><Grid container spacing={2}>
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'terreniEFabbricati']} label="1) Terreni e fabbricati" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'impiantiEMacchinari']} label="2) Impianti e macchinari" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'attrezzature']} label="3) Attrezzature industriali e comm." />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'altriBeni']} label="4) Altri beni" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'immobilizzazioniInCorsoEAcconti']} label="5) Immobilizzazioni in corso e acconti" />
-                                </Grid></AccordionDetails>
+                                <AccordionDetails><Grid container spacing={2}><InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'terreniEFabbricati']} label="1) Terreni e fabbricati" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'impiantiEMacchinari']} label="2) Impianti e macchinari" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'attrezzature']} label="3) Attrezzature industriali e comm." /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'altriBeni']} label="4) Altri beni" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'materiali', 'immobilizzazioniInCorsoEAcconti']} label="5) Immobilizzazioni in corso e acconti" /></Grid></AccordionDetails>
                             </Accordion>
                             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>B.III) Immobilizzazioni finanziarie</Typography></AccordionSummary>
-                                <AccordionDetails><Grid container spacing={2}>
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'partecipazioniInControllate']} label="1.a) Partecipazioni in controllate" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'partecipazioniInCollegate']} label="1.b) Partecipazioni in collegate" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'partecipazioniInControllanti']} label="1.c) Partecipazioni in controllanti" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'altrePartecipazioni']} label="1.d) Altre partecipazioni" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'creditiVersoControllate']} label="2.a) Crediti verso controllate (fin.)" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'creditiVersoCollegate']} label="2.b) Crediti verso collegate (fin.)" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'creditiVersoControllanti']} label="2.c) Crediti verso controllanti (fin.)" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'altriCreditiFinanziari']} label="2.d) Crediti verso altri (fin.)" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'altriTitoli']} label="3) Altri titoli" />
-                                    <InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'azioniProprie']} label="4) Azioni proprie" />
-                                </Grid></AccordionDetails>
+                                <AccordionDetails><Grid container spacing={2}><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'partecipazioniInControllate']} label="1.a) Partecipazioni in controllate" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'partecipazioniInCollegate']} label="1.b) Partecipazioni in collegate" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'partecipazioniInControllanti']} label="1.c) Partecipazioni in controllanti" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'altrePartecipazioni']} label="1.d) Altre partecipazioni" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'creditiVersoControllate']} label="2.a) Crediti verso controllate (fin.)" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'creditiVersoCollegate']} label="2.b) Crediti verso collegate (fin.)" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'creditiVersoControllanti']} label="2.c) Crediti verso controllanti (fin.)" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'altriCreditiFinanziari']} label="2.d) Crediti verso altri (fin.)" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'altriTitoli']} label="3) Altri titoli" /><InputField path={['sp', 'attivo', 'immobilizzazioni', 'finanziarie', 'azioniProprie']} label="4) Azioni proprie" /></Grid></AccordionDetails>
                             </Accordion>
                         </AccordionDetails>
                     </Accordion>
                     <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>C) Attivo Circolante</Typography></AccordionSummary>
                         <AccordionDetails>
                             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>C.I) Rimanenze</Typography></AccordionSummary>
-                                <AccordionDetails><Grid container spacing={2}>
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'materiePrimeSussidiarieConsumo']} label="1) Materie prime, sussidiarie e di consumo" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'prodottiInCorsoESemilavorati']} label="2) Prodotti in corso e semilavorati" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'lavoriInCorsoSuOrdinazione']} label="3) Lavori in corso su ordinazione" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'prodottiFinitiEMerci']} label="4) Prodotti finiti e merci" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'accontiARimanenze']} label="5) Acconti" />
-                                </Grid></AccordionDetails>
+                                <AccordionDetails><Grid container spacing={2}><InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'materiePrimeSussidiarieConsumo']} label="1) Materie prime, sussidiarie e di consumo" /><InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'prodottiInCorsoESemilavorati']} label="2) Prodotti in corso e semilavorati" /><InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'lavoriInCorsoSuOrdinazione']} label="3) Lavori in corso su ordinazione" /><InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'prodottiFinitiEMerci']} label="4) Prodotti finiti e merci" /><InputField path={['sp', 'attivo', 'attivoCircolante', 'rimanenze', 'accontiARimanenze']} label="5) Acconti" /></Grid></AccordionDetails>
                             </Accordion>
                             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>C.II) Crediti</Typography></AccordionSummary>
+                                <AccordionDetails><Grid container spacing={2}><SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoClienti']} label="1) Verso Clienti" /><SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoControllate']} label="2) Verso imprese controllate" /><SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoCollegate']} label="3) Verso imprese collegate" /><SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoControllanti']} label="4) Verso imprese controllanti" /><SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'creditiTributariVSControllanti']} label="4-bis) Crediti tributari v/ controllanti" /><InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'tributari']} label="4-bis) Crediti tributari (altri)" /><InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'perImposteAnticipate']} label="4-ter) Imposte anticipate" /><InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoAltri']} label="4-quater) Verso altri" /></Grid></AccordionDetails>
+                            </Accordion>
+                            <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>C.III) Attività finanziarie che non costituiscono immobilizzazioni</Typography></AccordionSummary>
                                 <AccordionDetails><Grid container spacing={2}>
-                                    <SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoClienti']} label="1) Verso Clienti" />
-                                    <SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoControllate']} label="2) Verso imprese controllate" />
-                                    <SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoCollegate']} label="3) Verso imprese collegate" />
-                                    <SplitField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoControllanti']} label="4) Verso imprese controllanti" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'tributari']} label="4-bis) Crediti tributari" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'perImposteAnticipate']} label="4-ter) Imposte anticipate" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'crediti', 'versoAltri']} label="4-quater) Verso altri" />
+                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'attivitaFinanziarieNonImmobilizzate', 'partecipazioniInControllate']} label="1) Partecipazioni in imprese controllate" />
+                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'attivitaFinanziarieNonImmobilizzate', 'partecipazioniInCollegate']} label="2) Partecipazioni in imprese collegate" />
+                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'attivitaFinanziarieNonImmobilizzate', 'partecipazioniInControllanti']} label="2-bis) Partecipazioni in imprese controllanti" />
+                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'attivitaFinanziarieNonImmobilizzate', 'altrePartecipazioni']} label="3) Altre partecipazioni" />
+                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'attivitaFinanziarieNonImmobilizzate', 'azioniProprie']} label="5) Azioni proprie" />
+                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'attivitaFinanziarieNonImmobilizzate', 'strumentiFinanziariDerivatiAttivi']} label="6) Strumenti finanziari derivati attivi" />
+                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'attivitaFinanziarieNonImmobilizzate', 'altriTitoli']} label="7) Altri titoli" />
                                 </Grid></AccordionDetails>
                             </Accordion>
-                             <Grid container spacing={2} sx={{my: 2}}><InputField path={['sp', 'attivo', 'attivoCircolante', 'attivitaFinanziarieNonImmobilizzate']} label="C.III) Attività finanziarie non immobilizzate" /></Grid>
                             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>C.IV) Disponibilità liquide</Typography></AccordionSummary>
-                                <AccordionDetails><Grid container spacing={2}>
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'disponibilitaLiquide', 'depositiBancariEPostali']} label="1) Depositi bancari e postali" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'disponibilitaLiquide', 'assegni']} label="2) Assegni" />
-                                    <InputField path={['sp', 'attivo', 'attivoCircolante', 'disponibilitaLiquide', 'denaroEValoriInCassa']} label="3) Denaro e valori in cassa" />
-                                </Grid></AccordionDetails>
+                                <AccordionDetails><Grid container spacing={2}><InputField path={['sp', 'attivo', 'attivoCircolante', 'disponibilitaLiquide', 'depositiBancariEPostali']} label="1) Depositi bancari e postali" /><InputField path={['sp', 'attivo', 'attivoCircolante', 'disponibilitaLiquide', 'assegni']} label="2) Assegni" /><InputField path={['sp', 'attivo', 'attivoCircolante', 'disponibilitaLiquide', 'denaroEValoriInCassa']} label="3) Denaro e valori in cassa" /></Grid></AccordionDetails>
                             </Accordion>
                         </AccordionDetails>
                     </Accordion>
-                    <Grid container spacing={2} sx={{mt: 1}}><InputField path={['sp', 'attivo', 'rateiERiscontiAttivi']} label="D) Ratei e risconti attivi" /></Grid>
+                    <Grid container spacing={2} sx={{mt: 1}}><SplitField path={['sp', 'attivo', 'rateiERiscontiAttivi']} label="D) Ratei e risconti attivi" /></Grid>
                 </AccordionDetails>
             </Accordion>
             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography variant="subtitle1">PASSIVO</Typography></AccordionSummary>
                 <AccordionDetails>
                     <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>A) Patrimonio Netto</Typography></AccordionSummary>
-                        <AccordionDetails><Grid container spacing={2}>
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'capitale']} label="A.I) Capitale" />
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaSovrapprezzoAzioni']} label="A.II) Riserva da sovrapprezzo azioni" />
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaDaRivalutazione']} label="A.III) Riserve di rivalutazione" />
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaLegale']} label="A.IV) Riserva legale" />
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'riserveStatutarie']} label="A.V) Riserve statutarie" />
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'altreRiserve']} label="A.VI) Altre riserve" />
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaPerOperazioniCoperturaFlussiFinanziariAttesi']} label="A.VII) Riserva per operazioni di copertura" />
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'utilePerditaPortataANuovo']} label="A.VIII) Utile (perdita) a nuovo" />
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'utilePerditaEsercizio']} label="A.IX) Utile (perdita) d'esercizio" />
-                            <InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaNegativaAzioniProprie']} label="A.X) Riserva negativa per azioni proprie" />
-                        </Grid></AccordionDetails>
+                        <AccordionDetails><Grid container spacing={2}><InputField path={['sp', 'passivo', 'patrimonioNetto', 'capitale']} label="A.I) Capitale" /><InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaSovrapprezzoAzioni']} label="A.II) Riserva da sovrapprezzo azioni" /><InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaDaRivalutazione']} label="A.III) Riserve di rivalutazione" /><InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaLegale']} label="A.IV) Riserva legale" /><InputField path={['sp', 'passivo', 'patrimonioNetto', 'riserveStatutarie']} label="A.V) Riserve statutarie" /><InputField path={['sp', 'passivo', 'patrimonioNetto', 'altreRiserve']} label="A.VI) Altre riserve" /><InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaPerOperazioniCoperturaFlussiFinanziariAttesi']} label="A.VII) Riserva per operazioni di copertura" /><InputField path={['sp', 'passivo', 'patrimonioNetto', 'utilePerditaPortataANuovo']} label="A.VIII) Utile (perdita) a nuovo" /><InputField path={['sp', 'passivo', 'patrimonioNetto', 'utilePerditaEsercizio']} label="A.IX) Utile (perdita) d'esercizio" /><InputField path={['sp', 'passivo', 'patrimonioNetto', 'riservaNegativaAzioniProprie']} label="A.X) Riserva negativa per azioni proprie" /></Grid></AccordionDetails>
                     </Accordion>
-                    <Grid container spacing={2} sx={{mt: 2}}>
-                        <InputField path={['sp', 'passivo', 'fondiPerRischiEOneri']} label="B) Fondi per rischi e oneri" />
-                        <InputField path={['sp', 'passivo', 'TFR']} label="C) TFR di lavoro subordinato" />
-                    </Grid>
+                    <Grid container spacing={2} sx={{mt: 2}}><SplitField path={['sp', 'passivo', 'fondiPerRischiEOneri']} label="B) Fondi per rischi e oneri" /><SplitField path={['sp', 'passivo', 'TFR']} label="C) TFR di lavoro subordinato" /></Grid>
                     <Accordion sx={{mt: 2}}><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>D) Debiti</Typography></AccordionSummary>
-                        <AccordionDetails><Grid container spacing={2}>
-                            <SplitField path={['sp', 'passivo', 'debiti', 'obbligazioni']} label="D.1) Obbligazioni" />
-                            <SplitField path={['sp', 'passivo', 'debiti', 'obbligazioniConvertibili']} label="D.2) Obbligazioni convertibili" />
-                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoSociPerFinanziamenti']} label="D.3) Debiti verso soci per finanziamenti" />
-                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoBanche']} label="D.4) Debiti verso banche" />
-                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoAltriFinanziatori']} label="D.5) Debiti verso altri finanziatori" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'accontiDaClienti']} label="D.6) Acconti" />
-                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoFornitori']} label="D.7) Debiti verso fornitori" />
-                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiRappresentatiDaTitoliDiCredito']} label="D.8) Debiti rappresentati da titoli di credito" />
-                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseControllate']} label="D.9) Debiti verso imprese controllate" />
-                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseCollegate']} label="D.10) Debiti verso imprese collegate" />
-                            <SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseControllanti']} label="D.11) Debiti verso imprese controllanti" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiTributari']} label="D.12) Debiti tributari" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'debitiVersoIstitutiPrevidenza']} label="D.13) Debiti v/ istituti di previdenza" />
-                            <InputField path={['sp', 'passivo', 'debiti', 'altriDebiti']} label="D.14) Altri debiti" />
-                        </Grid></AccordionDetails>
+                        <AccordionDetails><Grid container spacing={2}><SplitField path={['sp', 'passivo', 'debiti', 'obbligazioni']} label="D.1) Obbligazioni" /><SplitField path={['sp', 'passivo', 'debiti', 'obbligazioniConvertibili']} label="D.2) Obbligazioni convertibili" /><SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoSociPerFinanziamenti']} label="D.3) Debiti verso soci per finanziamenti" /><SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoBanche']} label="D.4) Debiti verso banche" /><SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoAltriFinanziatori']} label="D.5) Debiti verso altri finanziatori" /><InputField path={['sp', 'passivo', 'debiti', 'accontiDaClienti']} label="D.6) Acconti" /><SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoFornitori']} label="D.7) Debiti verso fornitori" /><SplitField path={['sp', 'passivo', 'debiti', 'debitiRappresentatiDaTitoliDiCredito']} label="D.8) Debiti rappresentati da titoli di credito" /><SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseControllate']} label="D.9) Debiti verso imprese controllate" /><SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseCollegate']} label="D.10) Debiti verso imprese collegate" /><SplitField path={['sp', 'passivo', 'debiti', 'debitiVersoImpreseControllanti']} label="D.11) Debiti verso imprese controllanti" /><InputField path={['sp', 'passivo', 'debiti', 'debitiTributari']} label="D.12) Debiti tributari" /><InputField path={['sp', 'passivo', 'debiti', 'debitiVersoIstitutiPrevidenza']} label="D.13) Debiti v/ istituti di previdenza" /><InputField path={['sp', 'passivo', 'debiti', 'altriDebiti']} label="D.14) Altri debiti" /></Grid></AccordionDetails>
                     </Accordion>
-                    <Grid container spacing={2} sx={{mt: 1}}><InputField path={['sp', 'passivo', 'rateiERiscontiPassivi']} label="E) Ratei e risconti passivi" /></Grid>
+                    <Grid container spacing={2} sx={{mt: 1}}><SplitField path={['sp', 'passivo', 'rateiERiscontiPassivi']} label="E) Ratei e risconti passivi" /></Grid>
                 </AccordionDetails>
             </Accordion>
         </AccordionDetails>
@@ -184,39 +126,44 @@ function BilancioForm() {
         </AccordionSummary>
         <AccordionDetails>
             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>A) Valore della Produzione</Typography></AccordionSummary>
-                <AccordionDetails><Grid container spacing={2}>
-                    <InputField path={['ce', 'valoreProduzione', 'ricaviVendite']} label="A.1) Ricavi delle vendite e delle prestazioni" />
-                    <InputField path={['ce', 'valoreProduzione', 'variazioniRimanenzeProdotti']} label="A.2) Variazioni rimanenze prodotti" />
-                    <InputField path={['ce', 'valoreProduzione', 'variazioniLavoriInCorso']} label="A.3) Variazioni lavori in corso" />
-                    <InputField path={['ce', 'valoreProduzione', 'incrementiImmobilizzazioniPerLavoriInterni']} label="A.4) Incrementi immobilizzazioni per lavori interni" />
-                    <InputField path={['ce', 'valoreProduzione', 'altriRicaviEProventi']} label="A.5) Altri ricavi e proventi" />
-                </Grid></AccordionDetails>
+                <AccordionDetails><Grid container spacing={2}><InputField path={['ce', 'valoreProduzione', 'ricaviVendite']} label="A.1) Ricavi vendite e prestazioni" /><InputField path={['ce', 'valoreProduzione', 'variazioniRimanenzeProdotti']} label="A.2) Variazioni rimanenze prodotti" /><InputField path={['ce', 'valoreProduzione', 'variazioniLavoriInCorso']} label="A.3) Variazioni lavori in corso" /><InputField path={['ce', 'valoreProduzione', 'incrementiImmobilizzazioniPerLavoriInterni']} label="A.4) Incrementi immobilizzazioni" /><InputField path={['ce', 'valoreProduzione', 'altriRicaviEProventi']} label="A.5) Altri ricavi e proventi" /></Grid></AccordionDetails>
             </Accordion>
              <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>B) Costi della Produzione</Typography></AccordionSummary>
-                <AccordionDetails><Grid container spacing={2}>
-                    <InputField path={['ce', 'costiProduzione', 'perMateriePrime']} label="B.6) Per materie prime, suss., di consumo" />
-                    <InputField path={['ce', 'costiProduzione', 'perServizi']} label="B.7) Per servizi" />
-                    <InputField path={['ce', 'costiProduzione', 'perGodimentoBeniTerzi']} label="B.8) Per godimento beni di terzi" />
-                    <InputField path={['ce', 'costiProduzione', 'perPersonale']} label="B.9) Per il personale" />
-                    <InputField path={['ce', 'costiProduzione', 'ammortamentiESvalutazioni']} label="B.10) Ammortamenti e svalutazioni" />
-                    <InputField path={['ce', 'costiProduzione', 'variazioniRimanenzeMaterie']} label="B.11) Var. rimanenze di materie prime" />
-                    <InputField path={['ce', 'costiProduzione', 'accantonamentiPerRischi']} label="B.12) Accantonamenti per rischi" />
-                    <InputField path={['ce', 'costiProduzione', 'altriAccantonamenti']} label="B.13) Altri accantonamenti" />
-                    <InputField path={['ce', 'costiProduzione', 'oneriDiversiGestione']} label="B.14) Oneri diversi di gestione" />
-                </Grid></AccordionDetails>
+                <AccordionDetails><Grid container spacing={2}><InputField path={['ce', 'costiProduzione', 'perMateriePrime']} label="B.6) Per materie prime" /><InputField path={['ce', 'costiProduzione', 'perServizi']} label="B.7) Per servizi" /><InputField path={['ce', 'costiProduzione', 'perGodimentoBeniTerzi']} label="B.8) Per godimento beni di terzi" /><InputField path={['ce', 'costiProduzione', 'perPersonale']} label="B.9) Per il personale" /><InputField path={['ce', 'costiProduzione', 'ammortamentiESvalutazioni']} label="B.10) Ammortamenti e svalutazioni" /><InputField path={['ce', 'costiProduzione', 'variazioniRimanenzeMaterie']} label="B.11) Var. rimanenze materie" /><InputField path={['ce', 'costiProduzione', 'accantonamentiPerRischi']} label="B.12) Accantonamenti per rischi" /><InputField path={['ce', 'costiProduzione', 'altriAccantonamenti']} label="B.13) Altri accantonamenti" /><InputField path={['ce', 'costiProduzione', 'oneriDiversiGestione']} label="B.14) Oneri diversi di gestione" /></Grid></AccordionDetails>
             </Accordion>
             <Accordion><AccordionSummary expandIcon={<ExpandMoreIcon />}><Typography>C) Proventi e Oneri Finanziari</Typography></AccordionSummary>
-                <AccordionDetails><Grid container spacing={2}>
-                    <InputField path={['ce', 'proventiEOneriFinanziari', 'proventiDaPartecipazioni']} label="C.15) Proventi da partecipazioni" />
-                    <InputField path={['ce', 'proventiEOneriFinanziari', 'altriProventiFinanziari']} label="C.16) Altri proventi finanziari" />
-                    <InputField path={['ce', 'proventiEOneriFinanziari', 'interessiEAltriOneri']} label="C.17) Interessi e altri oneri finanziari" />
-                    <InputField path={['ce', 'proventiEOneriFinanziari', 'utilePerditeSuCambi']} label="C.17-bis) Utili e perdite su cambi" />
-                </Grid></AccordionDetails>
+                <AccordionDetails><Grid container spacing={2}><InputField path={['ce', 'proventiEOneriFinanziari', 'proventiDaPartecipazioni']} label="C.15) Proventi da partecipazioni" /><InputField path={['ce', 'proventiEOneriFinanziari', 'altriProventiFinanziari']} label="C.16) Altri proventi finanziari" /><InputField path={['ce', 'proventiEOneriFinanziari', 'interessiEAltriOneri']} label="C.17) Interessi e altri oneri finanziari" /><InputField path={['ce', 'proventiEOneriFinanziari', 'utilePerditeSuCambi']} label="C.17-bis) Utili e perdite su cambi" /></Grid></AccordionDetails>
             </Accordion>
             <Grid container spacing={2} sx={{mt: 2}}>
                 <InputField path={['ce', 'rettificheValoreAttivitaPassivitaFinanziarie']} label="D) Rettifiche di valore di attività finanziarie" />
                 <InputField path={['ce', 'imposteSulReddito']} label="20) Imposte sul reddito d'esercizio" />
             </Grid>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ backgroundColor: '#e8eaf6' }}>
+          <Typography variant="h6">Prospetto Destinazione Utile (Opzionale)</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+            <Typography variant="body2" color="textSecondary" sx={{mb: 2}}>
+                Compilare questa sezione per allocare l'Utile dell'Esercizio (voce A.IX del Patrimonio Netto).
+            </Typography>
+            <Grid container spacing={2}>
+                <InputField path={['destinazioneUtile', 'aRiservaLegale']} label="Utile destinato a Riserva Legale" />
+                <InputField path={['destinazioneUtile', 'aRiservaStatutaria']} label="Utile destinato a Riserva Statutaria" />
+                <InputField path={['destinazioneUtile', 'aDividendi']} label="Utile distribuito come Dividendi" />
+                <InputField path={['destinazioneUtile', 'portatoANuovo']} label="Utile portato a nuovo" />
+            </Grid>
+            <Box sx={{ mt: 2, p: 1, border: '1px solid', borderColor: quadraturaUtile ? 'green' : 'red', borderRadius: 1 }}>
+                <Typography variant="body2">
+                    Utile da destinare: {new Intl.NumberFormat('it-IT').format(utileEsercizio)} €
+                    <br/>
+                    Totale destinato: {new Intl.NumberFormat('it-IT').format(totaleDestinato)} €
+                    <br/>
+                    Residuo: <span style={{ color: quadraturaUtile ? 'green' : 'red', fontWeight: 'bold' }}>{new Intl.NumberFormat('it-IT').format(utileEsercizio - totaleDestinato)} €</span>
+                </Typography>
+            </Box>
         </AccordionDetails>
       </Accordion>
 
